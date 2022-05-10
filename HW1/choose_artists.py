@@ -8,6 +8,8 @@ The list of ids you get is the list of artists you need to promote.
 ID1 = '206320772'
 ID2 = '313510679'
 ####################
+
+
 def main():
     x = (int(ID1[-1]) + int(ID2[-1])) % 5
     y = (int(ID1[-2]) + int(ID2[-2])) % 5
@@ -19,6 +21,7 @@ def main():
 # output:
 # your artists are:
 # 989 16326 511147 532992
+
 
 if __name__ == '__main__':
     main()
