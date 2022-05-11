@@ -9,14 +9,19 @@ ID1 = '206320772'
 ID2 = '313510679'
 ####################
 
-x = (int(ID1[-1]) + int(ID2[-1])) % 5
-y = (int(ID1[-2]) + int(ID2[-2])) % 5
-options = [(70, 150), (989, 16326), (144882, 194647), (389445, 390392), (511147, 532992)]
-y = (y + 1) % 5 if x == y else y
-print("your artists are:")
-print(*options[x], *options[y])
+
+def main():
+    x = (int(ID1[-1]) + int(ID2[-1])) % 5
+    y = (int(ID1[-2]) + int(ID2[-2])) % 5
+    options = [(70, 150), (989, 16326), (144882, 194647), (389445, 390392), (511147, 532992)]
+    y = (y + 1) % 5 if x == y else y
+    print("your artists are:")
+    print(*options[x], *options[y])
 
 # output:
 # your artists are:
 # 989 16326 511147 532992
 
+
+if __name__ == '__main__':
+    main()
