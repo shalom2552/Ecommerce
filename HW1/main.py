@@ -3,19 +3,7 @@ import numpy as np
 import networkx as nx
 import random
 import pandas as pd
-import matplotlib.pyplot as plt  # TODO remove
-
-# TODO remove
-""" 
-working plane:
-
-what we have:
-
-what we need:
-needs to calculate the chance to add a new node
-    iterate over each uninfected user and infect it by the probability
-    then check for 
-"""
+# import matplotlib.pyplot as plt  # TODO remove
 
 
 def main():
@@ -29,13 +17,15 @@ def main():
     for edge in np.array(G1.edges):
         G_diff.remove_edge(edge[0], edge[1])
 
-    # calculate graph adding edge prob
+    df = pd.read_csv('./data/spotifly.csv')
+    spotifly = df.to_dict(orient='list')
+
     # histogram
     hist = get_degree_histogram(G1)
-    plt.hist(hist, 10)
-    plt.show()
 
-    #
+    dict = {}
+    for user in G0.nodes:
+        dict[] = 5
     pass
 
 
