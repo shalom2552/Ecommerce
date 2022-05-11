@@ -7,6 +7,8 @@ import pandas as pd
 
 
 def main():
+    # TODO some student use KNN, what for?
+    # TODO some speaking on cross-validation, do we need it?
     # build graphs from the 2 csv files
     G0 = build_graph('./data/instaglam0.csv')
     G1 = build_graph('./data/instaglam_1.csv')
