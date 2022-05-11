@@ -2,8 +2,8 @@ import networkx
 import numpy as np
 import networkx as nx
 import random
-import pandas as pd
 # import matplotlib.pyplot as plt  # TODO remove
+import pandas as pd
 
 
 def main():
@@ -18,6 +18,15 @@ def main():
     # histogram
     hist = get_degree_histogram(G1)
 
+    # probability to add new edge if they have common friends
+    prob = calc_graph_prob(G1, G0)
+
+    influences = [197117, 563940, 385510, 865448, 381409]  # top 5 most degree TODO only temporary to run spread func
+    run(G0, influences, spotifly, prob)
+    pass
+
+
+def find_most_influences():
     # max_deg = 0
     # max_node = 0
     # for edge in np.array(G0.degree):
@@ -25,14 +34,12 @@ def main():
     #         max_node = edge[0]
     #         max_deg = edge[1]
     # print(max_node, max_deg)
-    # max node at 0 [197117, 21], [563940, 20], [385510, 18], [865448, 18], [381409, 16]\
+    # max node at 0 [197117, 21], [563940, 20], [385510, 18], [865448, 18], [381409, 16]
     # most degrees at G0: [197117, 563940, 385510, 865448, 381409]
-    influences = [197117, 563940, 385510, 865448, 381409]  # top 5 most degree
-    run(G0, influences, spotifly)
     pass
 
 
-def run(G, influences, spotifly):
+def run(G, influences, spotifly, prob):
     infected_list = influences
     for t in range(1, 7):
         now_infected = []
@@ -44,18 +51,16 @@ def run(G, influences, spotifly):
                 if p < calc_probability(G, adj, infected_list, spotifly, artist):
                     now_infected.append(adj)
         infected_list = infected_list + now_infected
-        update_graph(G)
+        update_graph(G, prob)
     pass
 
 
-def function(G1, G_diff):
-    hist = {}
-    for edge in G_diff.edges:
-        # adj1 = nx.read_adjlist(edge[0]
-        # adj12 = edge[1]
-        pass
-    print(G_diff.adjacency())
-    pass
+def calc_graph_prob(G1, G0):
+    G_diff = G0
+    for edge in np.array(G1.edges):
+        G_diff.remove_edge(edge[0], edge[1])
+    p = len(G_diff.edges) / len(G1.edges)
+    return p
 
 
 def build_graph(path):
@@ -70,23 +75,15 @@ def build_graph(path):
     return G
 
 
-def calc_graph_prob(G1, G0):
-    G_diff = G0
-
-    # get diff graph
-    for edge in np.array(G1.edges):
-        G_diff.remove_edge(edge[0], edge[1])
-    p = len(G_diff.edges) / len(G1.edges)
-    return p
-
-
-# TODO implement
-def update_graph(G):
-    # TODO find all pair of nodes with common friends
-    #   use that probability and add new edge only if it closes a triangle
-    #   2. add a edge if random < p
-    #   get p from global
-    pass
+def update_graph(G, prob):
+    for node in G.nodes:
+        for other in G.nodes:
+            # check if they have common friend\s TODO make it work for k number of friends
+            if G.neighbors(node) == G.neighbors(other):  # TODO change the condition to find cut between lists
+                p = random.uniform(0, 1)
+                if p < prob:
+                    G.add_edge(node, other)
+    return G
 
 
 # probability to infect from neighbor
