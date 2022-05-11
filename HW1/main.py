@@ -23,9 +23,21 @@ def main():
     # histogram
     hist = get_degree_histogram(G1)
 
-    dict = {}
-    for user in G0.nodes:
-        dict[] = 5
+    nodes_degree = np.array(G0.degree)
+    max5 = []
+    for i in range(5):
+        tmp = []
+        max_deg = 0
+        max_node = 0
+        for edge in nodes_degree:
+            print(i, max_deg)
+            if max_deg < edge[1]:
+                max_node = edge[0]
+                max_deg = edge[1]
+            else:
+                tmp.append(edge)
+        max5.append([max_node, max_deg])
+    print(max5)
     pass
 
 
