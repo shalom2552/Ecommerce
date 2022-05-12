@@ -1,106 +1,130 @@
-import networkx
 import numpy as np
 import networkx as nx
 import random
-# import matplotlib.pyplot as plt  # TODO remove
 import pandas as pd
 
 
 def main():
-    # TODO some student use KNN, what for?
-    # TODO some speaking on cross-validation, do we need it?
-    # build graphs from the 2 csv files
-    G0 = build_graph('./data/instaglam0.csv')
-    G1 = build_graph('./data/instaglam_1.csv')
-    p = calc_graph_prob(G1, G0)
+    G = build_graph()
+    artists = [989, 16326, 511147, 532992]
+    influencers = find_most_influences(G)
 
-    df = pd.read_csv('./data/spotifly.csv')
-    spotifly = df.to_dict(orient='list')
-
-    # histogram
-    hist = get_degree_histogram(G1)
-
-    # probability to add new edge if they have common friends
-    prob = calc_graph_prob(G1, G0)
-
-    influences = [197117, 563940, 385510, 865448, 381409]  # top 5 most degree TODO only temporary to run spread func
-    run(G0, influences, spotifly, prob)
+    prob_hist = calc_graph_prob()
+    for artist in artists:
+        print(f'artist: {artist}')
+        infected_list = simulation_per_artist(G, influencers, artist, prob_hist)
+        print(f"Total user infected for artist {artist}: {len(infected_list)}")
     pass
 
 
-def find_most_influences():
-    # max_deg = 0
-    # max_node = 0
-    # for edge in np.array(G0.degree):
-    #     if max_deg < edge[1] and edge[0] not in [197117, 563940, 385510, 865448, 381409]:
-    #         max_node = edge[0]
-    #         max_deg = edge[1]
-    # print(max_node, max_deg)
-    # max node at 0 [197117, 21], [563940, 20], [385510, 18], [865448, 18], [381409, 16]
-    # most degrees at G0: [197117, 563940, 385510, 865448, 381409]
-    pass
-
-
-def run(G, influences, spotifly, prob):
-    infected_list = influences
+def simulation_per_artist(G, influencers, artist, prob_hist):
+    infected_list = influencers
     for t in range(1, 7):
         now_infected = []
+        total_adj = 0
         for infected in infected_list:
-            # artist = infected.get_artist()  # TODO how to find artist
-            artist = None
+            num_adj = 0
+            num_infected = 0
             for adj in G.neighbors(infected):
-                p = random.uniform(0, 1)
-                if p < calc_probability(G, adj, infected_list, spotifly, artist):
-                    now_infected.append(adj)
+                total_adj += 1
+                num_adj += 1
+                if adj not in infected_list and adj not in now_infected:
+                    p = random.uniform(0, 1)
+                    if p < calc_probability_to_infect(G, adj, infected_list, artist):
+                        num_infected += 1
+                        now_infected.append(adj)
+        print(f"Iter: {t}, infected: {len(now_infected)}, from {len(infected_list)}"
+              f", out of: {total_adj}, ratio: {round(len(infected_list)/total_adj, 3)}")
         infected_list = infected_list + now_infected
-        update_graph(G, prob)
-    pass
+        # G = update_graph(G, prob_hist)  # TODO enable this
+    return infected_list
 
 
-def calc_graph_prob(G1, G0):
-    G_diff = G0
-    for edge in np.array(G1.edges):
-        G_diff.remove_edge(edge[0], edge[1])
-    p = len(G_diff.edges) / len(G1.edges)
-    return p
+def find_most_influences(G):
+    max5 = []
+    for i in range(5):
+        max_deg = 0
+        max_node = None
+        for node in np.array(G.degree):
+            if max_deg < node[1] and node[0] not in max5:
+                max_deg = node[1]
+                max_node = node[0]
+        # print(f"User: {max_node}, Degree: {max_deg}")
+        max5.append(max_node)
+    return max5
 
 
-def build_graph(path):
+def calc_graph_prob():
+    G0, G1 = graph_it('./data/instaglam_1.csv'), graph_it('./data/instaglam0.csv')
+    num_nodes = G0.number_of_nodes()
+    pairs = np.zeros(num_nodes)
+    connected_pairs = np.zeros(num_nodes)
+    visit = []
+    print("Calculating probability vector...")
+    for node in G0.nodes():
+        visit.append(node)
+        for other in G0.nodes() - visit:
+            k = len(list(nx.common_neighbors(G0, node, other)))
+            if not G0.has_edge(node, other):  # TODO if k in prob_hist.keys() else p = ?
+                pairs[k] += 1
+                if G1.has_edge(node, other):
+                    connected_pairs[k] += 1
+    prob_hist = np.zeros(len(pairs))
+    for i in range(len(pairs)):
+        if pairs[i] != 0:
+            prob_hist[i] = (connected_pairs[i] / pairs[i])
+    return prob_hist
+
+
+def graph_it(path):
     df = pd.read_csv(path)
     data = df.to_dict(orient='list')
     users = np.array(data['userID'])
     friends = np.array(data['friendID'])
-
     G = nx.Graph()
     G.add_nodes_from(np.unique(np.append(users, friends)))
     G.add_edges_from(list(zip(users, friends)))
     return G
 
 
-def update_graph(G, prob):
+def build_graph():
+    path = './data/instaglam0.csv'
+    G = graph_it(path)
+    df = pd.read_csv('./data/spotifly.csv')
+    spotifly_dict = df.groupby('userID').apply(lambda x: dict(zip(x[' artistID'], x['#plays']))).to_dict()
+    nx.set_node_attributes(G, spotifly_dict)
+    return G
+
+
+def update_graph(G, prob_hist):
+    print("Updating graph...")
+    visit = []
     for node in G.nodes:
-        for other in G.nodes:
-            # check if they have common friend\s TODO make it work for k number of friends
-            if G.neighbors(node) == G.neighbors(other):  # TODO change the condition to find cut between lists
+        visit.append(node)
+        for other in G.nodes - visit:
+            if not G.has_edge(node, other):  # TODO check e=(u,v), e=(v,u)
+                k = len(list(nx.common_neighbors(G, node, other)))
+                prob = prob_hist[k]
                 p = random.uniform(0, 1)
                 if p < prob:
                     G.add_edge(node, other)
+            pass
+        pass
     return G
 
 
 # probability to infect from neighbor
-def calc_probability(G, node, infected, spotifly, artist):
+def calc_probability_to_infect(G, node, infected, artist):
     neighbors = G.neighbors(node)
-    N_t = len(neighbors)
-    B_t = 0
+    N_t, B_t = 0, 0
     for neighbor in neighbors:
+        N_t += 1
         if neighbor in infected:
             B_t += 1
-    h = 0
-    for record in spotifly:
-        if record[0] == node and record[1] == artist:
-            h = record[2]
-            break
+    if artist not in G.nodes[node].keys():
+        h = 0
+    else:
+        h = G.nodes[node][artist]
     if h != 0:
         return h * B_t / N_t * 1000  # (h * B_t) / (1000 * N_t)
     else:
@@ -108,19 +132,5 @@ def calc_probability(G, node, infected, spotifly, artist):
     pass
 
 
-def get_degree_histogram(graph):
-    hist = {}
-    for d in graph.degree():
-        if d[1] in hist.keys():
-            hist[d[1]] += 1
-        else:
-            hist[d[1]] = 1
-    # plt.hist(histogram)
-    # plt.show()
-    return hist
-
-
 if __name__ == '__main__':
     main()
-
-
