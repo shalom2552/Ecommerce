@@ -5,6 +5,7 @@ import pandas as pd
 
 
 def main():
+    random.seed(772)
     G = build_graph()
     artists = [989, 16326, 511147, 532992]
 
@@ -45,7 +46,7 @@ def main():
 
 def simulate_influencers_influence(G: nx.Graph, artists: list):
     prob_hist = []
-    k = 6
+    k = 10
     for artist in artists:
         influencers_lists, added = find_most_k_influences(G, k)
         max_influence = 0
