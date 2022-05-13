@@ -5,15 +5,20 @@ import pandas as pd
 
 
 def main():
+    random.seed(772)  # TODO remove this
     G = build_graph()
     artists = [989, 16326, 511147, 532992]
-    influencers = find_most_influences(G)
 
-    prob_hist = calc_graph_prob()
+    prob_hist = []  # TODO remove this
+    # prob_hist = calc_graph_prob()  # TODO enable this
+    total_infected = 0
     for artist in artists:
+        influencers = find_most_influences(G)
         print(f'artist: {artist}')
         infected_list = simulation_per_artist(G, influencers, artist, prob_hist)
         print(f"Total user infected for artist {artist}: {len(infected_list)}")
+        total_infected += len(infected_list)
+    print(f'Total infected: {total_infected}')
     pass
 
 
@@ -42,14 +47,13 @@ def simulation_per_artist(G, influencers, artist, prob_hist):
 
 def find_most_influences(G):
     max5 = []
-    for i in range(5):
+    while len(max5) < 5:
         max_deg = 0
         max_node = None
         for node in np.array(G.degree):
             if max_deg < node[1] and node[0] not in max5:
                 max_deg = node[1]
                 max_node = node[0]
-        # print(f"User: {max_node}, Degree: {max_deg}")
         max5.append(max_node)
     return max5
 
@@ -104,7 +108,7 @@ def update_graph(G, prob_hist):
         for other in G.nodes - visit:
             if not G.has_edge(node, other):  # TODO check e=(u,v), e=(v,u)
                 k = len(list(nx.common_neighbors(G, node, other)))
-                prob = prob_hist[k]
+                prob = prob_hist[k]  # TODO check for index out of bound error
                 p = random.uniform(0, 1)
                 if p < prob:
                     G.add_edge(node, other)
@@ -126,7 +130,7 @@ def calc_probability_to_infect(G, node, infected, artist):
     else:
         h = G.nodes[node][artist]
     if h != 0:
-        return h * B_t / N_t * 1000  # (h * B_t) / (1000 * N_t)
+        return (h * B_t) / (1000 * N_t)
     else:
         return B_t / N_t
     pass
