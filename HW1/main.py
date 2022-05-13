@@ -5,12 +5,13 @@ import pandas as pd
 
 
 def main():
-    random.seed(772)  # TODO remove this
     G = build_graph()
     artists = [989, 16326, 511147, 532992]
 
-    prob_hist = []  # TODO remove this
-    # prob_hist = calc_graph_prob()  # TODO enable this
+    simulate_influencers_influence(G, artists)  # this if for us to study the data
+    return
+    # prob_hist = calc_graph_prob()  # TODO enable
+    prob_hist = []
     total_infected = 0
     for artist in artists:
         influencers = find_most_influences(G)
@@ -22,7 +23,47 @@ def main():
     pass
 
 
-def simulation_per_artist(G, influencers, artist, prob_hist):
+# def hill_climb(G, artist):
+#     influencers = []
+#     while len(influencers) < 5:
+#         IC = {}
+#         for node in G.nodes() - influencers:
+#             potential_influence = calc_potential_potential(G, node, artist)
+#             IC[node] = potential_influence
+#         best_influencer = max(IC, key=IC.get)
+#         influencers.append(best_influencer)
+#     return influencers
+#
+#
+# def calc_potential_potential(G, node, artist):
+#     potential_influence = 0
+#     for neighbor in nx.neighbors(G, node):
+#         # potential_influence +=  # TODO
+#         pass
+#     return potential_influence
+
+
+def simulate_influencers_influence(G: nx.Graph, artists: list):
+    prob_hist = []
+    k = 6
+    for artist in artists:
+        influencers_lists, added = find_most_k_influences(G, k)
+        max_influence = 0
+        max_influencers = []
+        for influencers in influencers_lists:
+            total_infected = 0
+            infected_list = simulation_per_artist(G, list(influencers), artist, prob_hist)
+            total_infected += len(infected_list)
+            if max_influence < total_infected:
+                max_influence = total_infected
+                max_influencers = influencers
+            print(f'influencers: {influencers}, k = {k}, ', end='')
+            print(f'Total infected: {total_infected}, artist: {artist}')
+        print(f'max influence: {max_influence}, influencers: {max_influencers}')
+    pass
+
+
+def simulation_per_artist(G: nx.Graph, influencers: list, artist, prob_hist):
     infected_list = influencers
     for t in range(1, 7):
         now_infected = []
@@ -38,14 +79,14 @@ def simulation_per_artist(G, influencers, artist, prob_hist):
                     if p < calc_probability_to_infect(G, adj, infected_list, artist):
                         num_infected += 1
                         now_infected.append(adj)
-        print(f"Iter: {t}, infected: {len(now_infected)}, from {len(infected_list)}"
-              f", out of: {total_adj}, ratio: {round(len(infected_list)/total_adj, 3)}")
+        # print(f"Iter: {t}, infected: {len(now_infected)}, from {len(infected_list)}"
+        #       f", out of: {total_adj}, ratio: {round(len(infected_list)/total_adj, 3)}")
         infected_list = infected_list + now_infected
         # G = update_graph(G, prob_hist)  # TODO enable this
     return infected_list
 
 
-def find_most_influences(G):
+def find_most_influences(G: nx.Graph):
     max5 = []
     while len(max5) < 5:
         max_deg = 0
@@ -56,6 +97,34 @@ def find_most_influences(G):
                 max_node = node[0]
         max5.append(max_node)
     return max5
+
+
+def find_most_k_influences(G: nx.Graph, k: int):
+    max_k = []
+    while len(max_k) < k:
+        max_deg = 0
+        max_node = None
+        for node in np.array(G.degree):
+            if max_deg < node[1] and node[0] not in max_k:
+                max_deg = node[1]
+                max_node = node[0]
+        max_k.append(max_node)
+
+    # added = []
+    # max5 = []
+    # while len(max5) < 5:
+    #     random_index = random.randint(0, len(max_k) - 1)
+    #     if random_index not in added:
+    #         added.append(random_index)
+    #         max5.append(max_k[random_index])
+    # print(f'{max5}, k = {k}')
+    # return max5, added
+
+    import itertools
+    max5 = []
+    max5 = itertools.combinations(max_k, 5)
+    # print(list(max5))
+    return max5, []
 
 
 def calc_graph_prob():
@@ -80,7 +149,7 @@ def calc_graph_prob():
     return prob_hist
 
 
-def graph_it(path):
+def graph_it(path: str):
     df = pd.read_csv(path)
     data = df.to_dict(orient='list')
     users = np.array(data['userID'])
@@ -118,7 +187,7 @@ def update_graph(G, prob_hist):
 
 
 # probability to infect from neighbor
-def calc_probability_to_infect(G, node, infected, artist):
+def calc_probability_to_infect(G: nx.Graph, node, infected, artist):
     neighbors = G.neighbors(node)
     N_t, B_t = 0, 0
     for neighbor in neighbors:
