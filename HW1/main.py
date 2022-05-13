@@ -24,24 +24,24 @@ def main():
     pass
 
 
-# def hill_climb(G, artist):
-#     influencers = []
-#     while len(influencers) < 5:
-#         IC = {}
-#         for node in G.nodes() - influencers:
-#             potential_influence = calc_potential_potential(G, node, artist)
-#             IC[node] = potential_influence
-#         best_influencer = max(IC, key=IC.get)
-#         influencers.append(best_influencer)
-#     return influencers
-#
-#
-# def calc_potential_potential(G, node, artist):
-#     potential_influence = 0
-#     for neighbor in nx.neighbors(G, node):
-#         # potential_influence +=  # TODO
-#         pass
-#     return potential_influence
+def hill_climb(G, artist):
+    influencers = []
+    while len(influencers) < 5:
+        IC = {}
+        for node in G.nodes() - influencers:
+            potential_influence = calc_potential_potential(G, node, artist)
+            IC[node] = potential_influence
+        best_influencer = max(IC, key=IC.get)
+        influencers.append(best_influencer)
+    return influencers
+
+
+def calc_potential_potential(G, node, artist):
+    potential_influence = 0
+    for neighbor in nx.neighbors(G, node):
+        # potential_influence +=  # TODO
+        pass
+    return potential_influence
 
 
 def simulate_influencers_influence(G: nx.Graph, artists: list):
