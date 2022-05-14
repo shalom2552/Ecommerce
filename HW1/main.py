@@ -9,7 +9,11 @@ def main():
     G = build_graph()
     artists = [989, 16326, 511147, 532992]
 
-    simulate_influencers_influence(G, artists)  # this if for us to study the data
+    # simulate_influencers_influence(G, artists)  # this if for us to study the data
+    for artist in artists:
+        print(f'artist: {artist}')
+        influencers = hill_climb(G, artist)
+        print(f'artist: {artist}, influencers: {influencers}')
     return
     # prob_hist = calc_graph_prob()  # TODO enable
     prob_hist = []
@@ -29,14 +33,15 @@ def hill_climb(G, artist):
     while len(influencers) < 5:
         IC = {}
         for node in G.nodes() - influencers:
-            potential_influence = calc_potential_potential(G, node, artist)
-            IC[node] = potential_influence
+            amount_infected = len(simulation_per_artist(G, influencers + [node], artist, []))
+            IC[node] = amount_infected
         best_influencer = max(IC, key=IC.get)
         influencers.append(best_influencer)
+        print(f'influencers: {influencers}, amount: {IC[best_influencer]}')
     return influencers
 
 
-def calc_potential_potential(G, node, artist):
+def calc_potential_potential(G, node, artist, influencers):
     potential_influence = 0
     for neighbor in nx.neighbors(G, node):
         # potential_influence +=  # TODO
