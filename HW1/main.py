@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def main():
-    random.seed(772)
+    # random.seed(772)
     G = build_graph()
     artists = [989, 16326, 511147, 532992]
 
