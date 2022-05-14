@@ -8,12 +8,18 @@ def main():
     # random.seed(772)
     G = build_graph()
     artists = [989, 16326, 511147, 532992]
-
+    # artist: 989, influencers: [601148, 798855, 265474, 655767, 411093], amount: 1724
+    # list_ = simulation_per_artist(G, [548221,411093,874459,175764,852394], 989, [])
+    # print(len(list_))
+    # return
     # simulate_influencers_influence(G, artists)  # this if for us to study the data
-    for artist in artists:
+    sourceFile = open('sim_res.txt', 'w')
+    for artist in [16326, 511147, 532992]:
         print(f'artist: {artist}')
-        influencers = hill_climb(G, artist)
-        print(f'artist: {artist}, influencers: {influencers}')
+        influencers, amount = hill_climb(G, artist)
+        print(f'artist: {artist}, influencers: {influencers}, amount: {amount}')
+        print(f'artist: {artist}, influencers: {influencers}, amount: {amount}', file=sourceFile)
+    sourceFile.close()
     return
     # prob_hist = calc_graph_prob()  # TODO enable
     prob_hist = []
@@ -30,6 +36,7 @@ def main():
 
 def hill_climb(G, artist):
     influencers = []
+    amount = 0
     while len(influencers) < 5:
         IC = {}
         for node in G.nodes() - influencers:
@@ -37,8 +44,9 @@ def hill_climb(G, artist):
             IC[node] = amount_infected
         best_influencer = max(IC, key=IC.get)
         influencers.append(best_influencer)
+        amount = IC[best_influencer]
         print(f'influencers: {influencers}, amount: {IC[best_influencer]}')
-    return influencers
+    return influencers, amount
 
 
 def calc_potential_potential(G, node, artist, influencers):

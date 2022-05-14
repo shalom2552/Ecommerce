@@ -1,26 +1,2 @@
-influencers: [3, 28, 26, 17, 10], k = 30, Total infected: 6387
-influencers: [2, 27, 24, 4, 10], k = 29, Total infected: 6728
-influencers: [7, 23, 2, 19, 11], k = 28, Total infected: 6787
-influencers: [24, 26, 17, 25, 11], k = 27, Total infected: 6486
-influencers: [13, 1, 20, 25, 0], k = 26, Total infected: 6954
-influencers: [1, 8, 4, 22, 17], k = 25, Total infected: 6932
-influencers: [20, 11, 6, 7, 19], k = 24, Total infected: 6692
-influencers: [4, 21, 20, 6, 12], k = 23, Total infected: 6746
-influencers: [13, 0, 16, 3, 7], k = 22, Total infected: 6866
-influencers: [6, 2, 17, 8, 1], k = 21, Total infected: 6967
-influencers: [11, 1, 18, 10, 8], k = 20, Total infected: 6943
-influencers: [13, 1, 0, 5, 9], k = 19, Total infected: 7022
-influencers: [16, 12, 2, 6, 11], k = 18, Total infected: 6838
-influencers: [2, 16, 7, 3, 11], k = 17, Total infected: 6857
-influencers: [1, 13, 12, 7, 11], k = 16, Total infected: 6770
-influencers: [14, 10, 11, 2, 4], k = 15, Total infected: 6730
-influencers: [13, 12, 10, 6, 4], k = 14, Total infected: 6704
-influencers: [5, 1, 4, 11, 2], k = 13, Total infected: 7005
-influencers: [1, 5, 11, 6, 4], k = 12, Total infected: 6869
-influencers: [5, 2, 8, 0, 1], k = 11, Total infected: 7020
-influencers: [3, 6, 4, 9, 8], k = 10, Total infected: 6796
-influencers: [2, 4, 6, 8, 0], k = 9, Total infected: 6979
-influencers: [1, 2, 0, 3, 4], k = 8, Total infected: 7101
-influencers: [1, 4, 2, 0, 3], k = 7, Total infected: 7014
-influencers: [0, 2, 1, 3, 4], k = 6, Total infected: 7086
-influencers: [4, 2, 1, 3, 0], k = 5, Total infected: 7068
+output
+artist: 16326
