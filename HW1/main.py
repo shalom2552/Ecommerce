@@ -14,7 +14,7 @@ def main():
     # return
     # simulate_influencers_influence(G, artists)  # this if for us to study the data
     sourceFile = open('sim_res.txt', 'w')
-    for artist in [16326, 511147, 532992]:
+    for artist in artists:
         print(f'artist: {artist}')
         influencers, amount = hill_climb(G, artist)
         print(f'artist: {artist}, influencers: {influencers}, amount: {amount}')

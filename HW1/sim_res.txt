@@ -1,2 +1,4 @@
-output
-artist: 16326
+artist: 989, influencers: [548221, 638857, 748236, 265474, 411093], amount: 1769
+artist: 16326, influencers: [308470, 702370, 791263, 12180, 789823], amount: 1754
+artist: 511147, influencers: [197117, 606675, 175764, 923376, 109410], amount: 1699
+artist: 532992, influencers: [70766, 411093, 408206, 473629, 548221], amount: 1793
