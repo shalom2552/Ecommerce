@@ -20,9 +20,8 @@ def main():
         print(f'artist: {artist}, influencers: {influencers}, amount: {amount}')
         print(f'artist: {artist}, influencers: {influencers}, amount: {amount}', file=sourceFile)
     sourceFile.close()
-    return
-    # prob_hist = calc_graph_prob()  # TODO enable
-    prob_hist = []
+    print("take 2:")
+    prob_hist = calc_graph_prob()
     total_infected = 0
     for artist in artists:
         influencers = find_most_influences(G)
@@ -37,10 +36,11 @@ def main():
 def hill_climb(G, artist):
     influencers = []
     amount = 0
+    prob_hist = calc_graph_prob()
     while len(influencers) < 5:
         IC = {}
         for node in G.nodes() - influencers:
-            amount_infected = len(simulation_per_artist(G, influencers + [node], artist, []))
+            amount_infected = len(simulation_per_artist(G, influencers + [node], artist, prob_hist))
             IC[node] = amount_infected
         best_influencer = max(IC, key=IC.get)
         influencers.append(best_influencer)
@@ -49,12 +49,12 @@ def hill_climb(G, artist):
     return influencers, amount
 
 
-def calc_potential_potential(G, node, artist, influencers):
-    potential_influence = 0
-    for neighbor in nx.neighbors(G, node):
-        # potential_influence +=  # TODO
-        pass
-    return potential_influence
+# def calc_potential_potential(G, node, artist, influencers):
+#     potential_influence = 0
+#     for neighbor in nx.neighbors(G, node):
+#         # potential_influence +=  # TODO
+#         pass
+#     return potential_influence
 
 
 def simulate_influencers_influence(G: nx.Graph, artists: list):
@@ -96,7 +96,7 @@ def simulation_per_artist(G: nx.Graph, influencers: list, artist, prob_hist):
         # print(f"Iter: {t}, infected: {len(now_infected)}, from {len(infected_list)}"
         #       f", out of: {total_adj}, ratio: {round(len(infected_list)/total_adj, 3)}")
         infected_list = infected_list + now_infected
-        # G = update_graph(G, prob_hist)  # TODO enable this
+        G = update_graph(G, prob_hist)
     return infected_list
 
 
@@ -152,7 +152,7 @@ def calc_graph_prob():
         visit.append(node)
         for other in G0.nodes() - visit:
             k = len(list(nx.common_neighbors(G0, node, other)))
-            if not G0.has_edge(node, other):  # TODO if k in prob_hist.keys() else p = ?
+            if not G0.has_edge(node, other):
                 pairs[k] += 1
                 if G1.has_edge(node, other):
                     connected_pairs[k] += 1
@@ -189,9 +189,9 @@ def update_graph(G, prob_hist):
     for node in G.nodes:
         visit.append(node)
         for other in G.nodes - visit:
-            if not G.has_edge(node, other):  # TODO check e=(u,v), e=(v,u)
+            if not G.has_edge(node, other):
                 k = len(list(nx.common_neighbors(G, node, other)))
-                prob = prob_hist[k]  # TODO check for index out of bound error
+                prob = prob_hist[k]
                 p = random.uniform(0, 1)
                 if p < prob:
                     G.add_edge(node, other)
