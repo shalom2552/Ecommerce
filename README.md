@@ -1,7 +1,8 @@
 # Ecommerce
 Ecommerce - Technion course
 
-In this exercise we built a recommendation system for the Spotify app. <br>
-The attached data contains a record of playbacks among about 2,000 users and close to 20,000 artists.<br>
-For the purpose of building the recommendation system, we used information from the social network describing relationships between the users.<br>
-Based on this data, we will predict the number of times a certain user will listen to a certain artist.<br>
+This exercise involved building a recommendation system for Spotifly.<br>
+There are approximately 2,000 users and close to 20,000 artists represented in the attached data.<br>
+Information about relationships between users from the social network was used to build the recommendation system.<br>
+By analyzing this data, we can predict how often a certain user will listen to a certain artist.<br>
+
